@@ -1,0 +1,32 @@
+html {
+    box-sizing: border-box;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
+    user-select: none;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    font-family: 'Titillium Web', Arial, sans-serif;
+}
+
+canvas {
+    width: 100vw;
+    height: 100vh;
+    display: block;
+}
+
+#container {
+    position: relative;
+}
+
+#test {
+    position: absolute;
+    left: 10;
+    top: 10px;
+}
