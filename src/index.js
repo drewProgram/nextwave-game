@@ -1,30 +1,26 @@
 "use_strict";
 import { resizeCanvas } from 'webgl-helper';
 
-import init from './init';
 import createProgram from './shaders/js/program';
 import Robot from './models/Robot';
+import Player from './models/Player';
+import Canvas from './models/Canvas';
 
 import './styles.css';
 
-const gl = init();
+// function updatePosition(index) {
+//     return (event, ui) => {
+//         translation[index] = ui.value;
+//         drawScene(lucy);
+//     };
+// }
 
-const program = createProgram(gl);
-
-const lucy = new Robot(gl, program, "Lucy");
-
-function updatePosition(index) {
-    return (event, ui) => {
-        translation[index] = ui.value;
-        drawScene(lucy);
-    };
-}
-
-/** @param {Robot[]} robots
- *  @param {number[]} translation
- *  @param {number[]} color
+/** @param {WebGL2RenderingContext} gl
+ *  @param {Robot | Player} robots
+ *  @param {WebGLProgram} program
+ *  @param {WebGLVertexArrayObject} vao
  */
-function drawScene(robots, program, vao, translation, color) {
+function drawScene(gl, robots, program, vao) {
     resizeCanvas(gl.canvas);
 
     // Tell WebGL how to convert from clip space to pixels
@@ -44,19 +40,19 @@ function drawScene(robots, program, vao, translation, color) {
     gl.uniform2f(robots.resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
 
     // Set a random color.
-    gl.uniform4fv(robots.colorLocation, color);
+    gl.uniform4fv(robots.colorLocation, robots.color);
 
-    gl.uniform2fv(robots.translationLocation, translation);
+    gl.uniform2fv(robots.translationLocation, robots.translation);
 
     // Draw the rectangle.
     const primitiveType = gl.TRIANGLES;
-    offset = 0;
+    let offset = 0;
     const count = 6;
     gl.drawArrays(primitiveType, offset, count);
 }
 
 // Fill the buffer with the values that define a rectangle.
-function setGeometry() {
+function setRobot(gl) {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
         // left column
         20, 100,
@@ -69,6 +65,12 @@ function setGeometry() {
 }
 
 function main() {
+    const canvas = new Canvas();
+
+    /** @type {WebGL2RenderingContext} */
+    const gl = canvas.getWebGL();
+    const program = createProgram(gl);
+
     // Create a buffer
     const positionBuffer = gl.createBuffer();
 
@@ -81,11 +83,13 @@ function main() {
     // and make it the one we're currently working with
     gl.bindVertexArray(vao);
 
+    const player1 = new Player(gl, program, "Lucy");
+
     // turn on the attribute
-    gl.enableVertexAttribArray(lucy.positionAttributeLocation);
+    gl.enableVertexAttribArray(player1.positionAttributeLocation);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    setGeometry(gl);
+    setRobot(gl);
 
     // how to pull the data out of the buffer
     let size = 2;             // 2 components per iteration
@@ -94,16 +98,11 @@ function main() {
     let stride = 0;           // 0 = move forward size * sizeof(type) each iteration to get the next position
     let offset = 0;           // start at the beginning of the buffer
     gl.vertexAttribPointer(
-        lucy.positionAttributeLocation, size, type,
+        player1.positionAttributeLocation, size, type,
         normalize, stride, offset
     );
 
-    // first let's make some vars to hold the translation,
-    // width and height of the rectangle
-    const translation = [0, 0];
-    const color = [Math.random(), Math.random(), Math.random(), 1];
-
-    drawScene(lucy, translation, color);
+    drawScene(gl, player1, program, vao);
 }
 
 main();

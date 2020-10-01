@@ -7,11 +7,14 @@ class Robot {
     
     translationLocation;
     
-    #life;
+    #life = 100;
 
-    name;
+    #name;
+    
+    color = [Math.random(), Math.random(), Math.random(), 1];
 
-    /** @param {WebGL2RenderingContext} gl */
+    translation = [0, 0];
+
     constructor(gl, program, name) {
         console.log("created a robot");
 
@@ -23,18 +26,15 @@ class Robot {
         this.colorLocation = gl.getUniformLocation(program, "u_color");
         this.translationLocation = gl.getUniformLocation(program, "u_translation");
 
-        this.name = name;
-        this.#life = 100;
+        this.#name = name;
+
+        console.log(this.#name);
+        console.log(this.#life);
     }
 
-    collisionWithEnemy() {
-        this.#life -= 20;
-        console.log("Attacking");
-    }
+    collisionWithEnemy() {}
 
-    walkOnArena() {
-        console.log("walking...");
-    }
+    walkOnArena() {}
 }
 
 export default Robot;
