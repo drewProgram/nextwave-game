@@ -11,7 +11,7 @@ class Robot {
 
     #name;
     
-    color = [Math.random(), Math.random(), Math.random(), 1];
+    color = [0, 0, 0.5, 1];
 
     translation = [0, 0];
 
@@ -34,7 +34,10 @@ class Robot {
 
     collisionWithEnemy() {}
 
-    walkOnArena() {}
+    walkOnArena(direction) {
+        this.translation[0] += direction.x;
+        this.translation[1] += direction.y;
+    }
 }
 
 export default Robot;

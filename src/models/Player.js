@@ -1,8 +1,30 @@
 import Robot from './Robot';
 
+
+
 class Player extends Robot {
-    super() {
-        console.log('Creating player');
+    /** @type {"player1" | "player2"} */
+    #type;
+
+    static command;
+
+    constructor(gl, program, type, name) {
+        super(gl, program, name);
+
+        this.#type = type;
+
+        console.log('teste');
+    }
+
+    handleInput(e) {
+        let x;
+        let y;
+
+        const coord = { x,y };
+
+        
+        
+        return;
     }
 }
 

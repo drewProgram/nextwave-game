@@ -25,8 +25,8 @@ canvas {
     position: relative;
 }
 
-#test {
+#hud {
     position: absolute;
-    left: 10;
+    left: 10px;
     top: 10px;
 }

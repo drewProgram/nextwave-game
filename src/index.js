@@ -8,13 +8,6 @@ import Canvas from './models/Canvas';
 
 import './styles.css';
 
-// function updatePosition(index) {
-//     return (event, ui) => {
-//         translation[index] = ui.value;
-//         drawScene(lucy);
-//     };
-// }
-
 /** @param {WebGL2RenderingContext} gl
  *  @param {Robot | Player} robots
  *  @param {WebGLProgram} program
@@ -52,7 +45,7 @@ function drawScene(gl, robots, program, vao) {
 }
 
 // Fill the buffer with the values that define a rectangle.
-function setRobot(gl) {
+function setRobots(gl) {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
         // left column
         20, 100,
@@ -78,10 +71,10 @@ function main() {
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
     // Create a vertex array object (attribute state)
-    const vao = gl.createVertexArray();
+    const player1VAO = gl.createVertexArray();
 
     // and make it the one we're currently working with
-    gl.bindVertexArray(vao);
+    gl.bindVertexArray(player1VAO);
 
     const player1 = new Player(gl, program, "Lucy");
 
@@ -89,7 +82,7 @@ function main() {
     gl.enableVertexAttribArray(player1.positionAttributeLocation);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    setRobot(gl);
+    setRobots(gl);
 
     // how to pull the data out of the buffer
     let size = 2;             // 2 components per iteration
@@ -102,7 +95,12 @@ function main() {
         normalize, stride, offset
     );
 
-    drawScene(gl, player1, program, vao);
+    drawScene(gl, player1, program, player1VAO);
+
+    window.addEventListener('keydown', e => {
+        player1.handleInput(e);
+        drawScene(gl, player1, program, player1VAO);
+    });
 }
 
 main();
