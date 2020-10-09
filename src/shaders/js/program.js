@@ -1,22 +1,15 @@
 import { createProgramFromSources } from 'webgl-helper';
 
 const vertexShaderSource = `#version 300 es
-in vec2 a_position;
+in vec4 a_position;
 
-uniform vec2 u_resolution;
-
-uniform vec2 u_translation;
+uniform vec4 u_translation;
 
 void main() {
-    vec2 position = a_position + u_translation;
+    // add in the translation
+    vec4 position = a_position + u_translation;
 
-    vec2 zeroToOne = position / u_resolution;
-
-    vec2 zertoToTwo = zeroToOne * 2.0;
-
-    vec2 clipSpace = zertoToTwo - 1.0;
-
-    gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+    gl_Position = vec4(position);
 }
 `;
 
