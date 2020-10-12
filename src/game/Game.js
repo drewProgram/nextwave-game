@@ -1,7 +1,7 @@
 import { resizeCanvas } from 'webgl-helper';
 
-import createProgram from './shaders/js/program';
-import Player from './models/Player';
+import createProgram from '../shaders/js/program';
+import Player from '../models/Player';
 
 class Game {
     /** @type {WebGL2RenderingContext} */
@@ -41,7 +41,7 @@ class Game {
     }
 
     // Fill the buffer with the values that define a robot.
-    setRobot({ position }) {
+    setRobot({ spawnLocation: position }) {
         this.#gl.bufferData(this.#gl.ARRAY_BUFFER, new Float32Array([
             // first triangle
             position.leftDown.x, position.leftDown.y,
@@ -80,18 +80,27 @@ class Game {
         );
 
         window.addEventListener('keydown', e => {
-            this.#player.handleInput(e, 'player1');
+            this.#player.move(e);
         });
         window.addEventListener('keyup', e => {
-            this.#player.handleInput(e, 'player1');
+            this.#player.move(e);
         });
     }
 
-    update() {
-        resizeCanvas(this.#gl.canvas);
+    resize() {
+        if (this.#gl.canvas !== undefined) {
+            this.#gl.canvas.width = window.innerWidth;
+            this.#gl.canvas.height = window.innerHeight;
 
-        // Tell WebGL how to convert from clip space to pixels
-        this.#gl.viewport(0, 0, this.#gl.canvas.width, this.#gl.canvas.height);
+            // Tell WebGL how to convert from clip space to pixels
+            this.#gl.viewport(0, 0, this.#gl.canvas.width, this.#gl.canvas.height);
+        }
+
+    }
+
+    update() {
+        this.#player.walkOnArena(this.#player.controls);
+        this.resize();
 
         // clear canvas
         this.#gl.clearColor(0, 0, 0, 0);
@@ -105,7 +114,7 @@ class Game {
         // Set a random color.
         this.#gl.uniform4fv(this.#player.colorLocation, this.#player.color);
 
-        this.#gl.uniform4fv(this.#player.translationLocation, this.#player.translation);
+        this.#gl.uniform4fv(this.#player.translationLocation, this.#player.speed);
 
         // Draw the rectangle.
         const primitiveType = this.#gl.TRIANGLES;

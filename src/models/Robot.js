@@ -10,16 +10,28 @@ class Robot {
     
     translationLocation;
 
-    position;
+    color = [0, 0, 0.5, 1];
+
+    #width;
+
+    #height;
+
+    spawnLocation;
+
+    minX;
+
+    maxX;
+
+    minY;
+
+    maxY;
     
     life = 100;
 
     name;
-    
-    color = [0, 0, 0.5, 1];
 
     /** @type {number[]} */
-    translation = [0, 0, 0, 0];
+    speed = [0, 0, 0, 0];
 
     constructor(gl, program, name, {start, width, height}) {
         console.log("created a robot");
@@ -37,39 +49,54 @@ class Robot {
         // Create a vertex array object (attribute state)
         this.vao = gl.createVertexArray();
 
+        this.#height = height;
+        this.#width = width;
+
         this.name = name;
 
         const x2 = start.x + width;
         const y2 = start.y + height;
-        this.position = {
+        this.spawnLocation = {
             leftDown: {x: start.x, y: start.y},
             leftUp: {x: start.x, y: y2},
             rightDown: {x: x2, y: start.y},
             rightUp: {x: x2, y: y2},
         };
 
+        this.minX = start.x;
+        this.maxX = x2;
+        this.minY = start.y;
+        this.maxY = y2;
+
         console.log(this.life);
     }
 
     #collisionWithEnemy() {}
 
-    walkOnArena(movement) {
-        // const nextXPosition = direction.x + this.positionAttributeLocation;
-        // const nextYPosition = direction.x + this.positionAttributeLocation;
-        // if (1) {
+    walkOnArena(controls) {
+        if (controls.up && this.maxY + 0.006 < 1) {
+            this.minY += 0.006;
+            this.maxY += 0.006;
 
-        // }
-        if (movement.up) {
-            this.translation[1] += 0.05;
+            this.speed[1] += 0.006;
         }
-        if (movement.left) {
-            this.translation[0] -= 0.05;
+        if (controls.left && this.minX - 0.006 > -1) {
+            this.minX -= 0.006;
+            this.maxX -= 0.006;
+
+            this.speed[0] -= 0.006;
         }
-        if (movement.down) {
-            this.translation[1] -= 0.05;
+        if (controls.down && this.minY - 0.006 > -1) {
+            this.minY -= 0.006;
+            this.maxY -= 0.006;
+
+            this.speed[1] -= 0.006;
         }
-        if (movement.right) {
-            this.translation[0] += 0.05;
+        if (controls.right && this.maxX + 0.006 < 1) {
+            this.minX += 0.006;
+            this.maxX += 0.006;
+
+            this.speed[0] += 0.006;
         }
     }
 }
