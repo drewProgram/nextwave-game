@@ -10,7 +10,7 @@ class Robot {
     
     translationLocation;
 
-    color = [0, 0, 0.5, 1];
+    color;
 
     #width;
 
@@ -33,7 +33,7 @@ class Robot {
     /** @type {number[]} */
     speed = [0, 0, 0, 0];
 
-    constructor(gl, program, name, {start, width, height}) {
+    constructor(gl, program, name, {start, width, height}, color) {
         console.log("created a robot");
 
         // Create a buffer
@@ -53,6 +53,8 @@ class Robot {
         this.#width = width;
 
         this.name = name;
+
+        this.color = color;
 
         const x2 = start.x + width;
         const y2 = start.y + height;

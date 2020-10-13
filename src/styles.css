@@ -31,3 +31,7 @@ canvas {
     left: 10px;
     top: 10px;
 }
+
+.player-info {
+    color: red;
+}

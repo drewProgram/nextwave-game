@@ -2,15 +2,18 @@ import { resizeCanvas } from 'webgl-helper';
 
 import createProgram from '../shaders/js/program';
 import Player from '../models/Player';
+import Controls from './Controls';
 
 class Game {
     /** @type {WebGL2RenderingContext} */
     #gl;
 
-    /** @type {Player} */
-    #player;
+    /** @type {Player[]} */
+    #players;
 
     gameType = 'pvp';
+
+    controls;
 
     /** @type {WebGLProgram} */
     #program;
@@ -23,9 +26,12 @@ class Game {
 
         this.#program = createProgram(this.#gl);
 
-        const { player1Spawn } = this.setRobotSpawn();
+        const { player1Spawn, player2Spawn } = this.setRobotSpawn();
 
-        this.#player = new Player(this.#gl, this.#program, 'player1', 'Lucy', player1Spawn);
+        this.#players = [
+            new Player(this.#gl, this.#program, 'player1', 'Lucy', player1Spawn, [0, 0, 0.5, 1]),
+            new Player(this.#gl, this.#program, 'player2', 'Enemy', player2Spawn, [0.5, 0, 0, 1]),
+        ];
     }
 
     setRobotSpawn() {
@@ -36,6 +42,11 @@ class Game {
                     width: 0.15,
                     height: 0.15,
                 },
+                player2Spawn: {
+                    start: { x: -0.1, y: 0.84 },
+                    width: 0.15,
+                    height: 0.15,
+                }
             };
         }
     }
@@ -55,35 +66,35 @@ class Game {
     }
 
     init() {
-        // set the buff we want to work with
-        this.#gl.bindBuffer(this.#gl.ARRAY_BUFFER, this.#player.buffer);
+        this.#players.forEach(player => {
+            // set the buff we want to work with
+            this.#gl.bindBuffer(this.#gl.ARRAY_BUFFER, player.buffer);
 
-        // and make it the one we're currently working with
-        this.#gl.bindVertexArray(this.#player.vao);
+            // and make it the one we're currently working with
+            this.#gl.bindVertexArray(player.vao);
 
-        // turn on the attribute
-        this.#gl.enableVertexAttribArray(this.#player.positionAttributeLocation);
+            // turn on the attribute
+            this.#gl.enableVertexAttribArray(player.positionAttributeLocation);
 
-        this.#gl.bindBuffer(this.#gl.ARRAY_BUFFER, this.#player.buffer);
+            this.setRobot(player);
 
-        this.setRobot(this.#player);
+            // how to pull the data out of the buffer
+            let size = 2;             // 2 components per iteration
+            let type = this.#gl.FLOAT;// the data is 32 bit floats
+            let normalize = false;    // don't normalize the data
+            let stride = 0;           // 0 = move forward size * sizeof(type) each iteration to get the next position
+            let offset = 0;           // start at the beginning of the buffer
+            this.#gl.vertexAttribPointer(
+                player.positionAttributeLocation, size, type,
+                normalize, stride, offset
+            );
 
-        // how to pull the data out of the buffer
-        let size = 2;             // 2 components per iteration
-        let type = this.#gl.FLOAT;// the data is 32 bit floats
-        let normalize = false;    // don't normalize the data
-        let stride = 0;           // 0 = move forward size * sizeof(type) each iteration to get the next position
-        let offset = 0;           // start at the beginning of the buffer
-        this.#gl.vertexAttribPointer(
-            this.#player.positionAttributeLocation, size, type,
-            normalize, stride, offset
-        );
-
-        window.addEventListener('keydown', e => {
-            this.#player.move(e);
-        });
-        window.addEventListener('keyup', e => {
-            this.#player.move(e);
+            window.addEventListener('keydown', e => {
+                player.move(e, player.type);
+            });
+            window.addEventListener('keyup', e => {
+                player.move(e, player.type);
+            });
         });
     }
 
@@ -95,32 +106,40 @@ class Game {
             // Tell WebGL how to convert from clip space to pixels
             this.#gl.viewport(0, 0, this.#gl.canvas.width, this.#gl.canvas.height);
         }
-
     }
 
     update() {
-        this.#player.walkOnArena(this.#player.controls);
         this.resize();
 
         // clear canvas
         this.#gl.clearColor(0, 0, 0, 0);
         this.#gl.clear(this.#gl.COLOR_BUFFER_BIT | this.#gl.DEPTH_BUFFER_BIT);
 
-        // tell it to use our program
-        this.#gl.useProgram(this.#program);
+        this.#players.forEach(player => {
+            player.walkOnArena(player.controls);
 
-        this.#gl.bindVertexArray(this.#player.vao);
+            // tell it to use our program
+            this.#gl.useProgram(this.#program);
 
-        // Set a random color.
-        this.#gl.uniform4fv(this.#player.colorLocation, this.#player.color);
+            this.#gl.bindBuffer(this.#gl.ARRAY_BUFFER, player.buffer);
 
-        this.#gl.uniform4fv(this.#player.translationLocation, this.#player.speed);
+            // and make it the one we're currently working with
+            this.#gl.bindVertexArray(player.vao);
 
-        // Draw the rectangle.
-        const primitiveType = this.#gl.TRIANGLES;
-        let offset = 0;
-        const count = 6;
-        this.#gl.drawArrays(primitiveType, offset, count);
+            // turn on the attribute
+            this.#gl.enableVertexAttribArray(player.positionAttributeLocation);
+
+            // Set a random color.
+            this.#gl.uniform4fv(player.colorLocation, player.color);
+
+            this.#gl.uniform4fv(player.translationLocation, player.speed);     
+
+            // Draw the rectangle.
+            const primitiveType = this.#gl.TRIANGLES;
+            let offset = 0;
+            const count = 6;
+            this.#gl.drawArrays(primitiveType, offset, count);
+        });
     }
 }
 
