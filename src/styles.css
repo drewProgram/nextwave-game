@@ -33,5 +33,29 @@ canvas {
 }
 
 .player-info {
+    padding: 20px;
     color: red;
+}
+
+#player1 {
+    color: blue;
+}
+
+#game-over {
+    position: absolute;
+    font-size: 100px;
+    left: 50vh;
+    top: 30vh;
+    color: red;
+}
+#winner {
+    position: absolute;
+    font-size: 100px;
+    left: 50vh;
+    top: 45vh;
+    color: red;
+}
+
+span {
+    color: green;
 }

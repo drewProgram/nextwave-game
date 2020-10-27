@@ -15,7 +15,6 @@ class Player extends Robot {
 
         this.controls = new Controls();
 
-        console.log(spawnLocation);
     }
 
     move(e) {

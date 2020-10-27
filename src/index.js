@@ -7,6 +7,11 @@ import './styles.css';
 const game = new Game();
 
 function loop() {
+    if (game.isGameOver()){
+        game.gameOver();
+        window.cancelAnimationFrame();
+    };
+
     game.update();
     window.requestAnimationFrame(loop);
 }

@@ -5,16 +5,12 @@ class Robot {
     buffer;
 
     positionAttributeLocation;
-        
+
     colorLocation;
-    
+
     translationLocation;
 
     color;
-
-    #width;
-
-    #height;
 
     spawnLocation;
 
@@ -25,17 +21,19 @@ class Robot {
     minY;
 
     maxY;
-    
+
     life = 100;
+
+    isAlive = true;
+
+    isDamageInCooldown = false;
 
     name;
 
     /** @type {number[]} */
     speed = [0, 0, 0, 0];
 
-    constructor(gl, program, name, {start, width, height}, color) {
-        console.log("created a robot");
-
+    constructor(gl, program, name, { start, width, height }, color) {
         // Create a buffer
         this.buffer = gl.createBuffer();
 
@@ -49,9 +47,6 @@ class Robot {
         // Create a vertex array object (attribute state)
         this.vao = gl.createVertexArray();
 
-        this.#height = height;
-        this.#width = width;
-
         this.name = name;
 
         this.color = color;
@@ -59,10 +54,10 @@ class Robot {
         const x2 = start.x + width;
         const y2 = start.y + height;
         this.spawnLocation = {
-            leftDown: {x: start.x, y: start.y},
-            leftUp: {x: start.x, y: y2},
-            rightDown: {x: x2, y: start.y},
-            rightUp: {x: x2, y: y2},
+            leftDown: { x: start.x, y: start.y },
+            leftUp: { x: start.x, y: y2 },
+            rightDown: { x: x2, y: start.y },
+            rightUp: { x: x2, y: y2 },
         };
 
         this.minX = start.x;
@@ -70,10 +65,41 @@ class Robot {
         this.minY = start.y;
         this.maxY = y2;
 
-        console.log(this.life);
     }
 
-    #collisionWithEnemy() {}
+    hasCollided(otherRobot) {
+        if ((this.minX >= otherRobot.minX && this.minX <= otherRobot.maxX ||
+            this.maxX <= otherRobot.maxX && this.maxX >= otherRobot.minX) &&
+            (this.minY >= otherRobot.minY && this.minY <= otherRobot.maxY ||
+                this.maxY <= otherRobot.maxY && this.maxY >= otherRobot.minY)) {
+
+            return true;
+        }
+        return false;
+    }
+
+    removeHP(number, lifeEL) {
+        if (!this.isDamageInCooldown) {
+            const damage = Math.floor(Math.random() * Math.floor(number));
+
+            this.life -= damage;
+
+            if (this.life <= 0) {
+                this.isAlive = false;
+            }
+
+            lifeEL.innerHTML = '';
+            lifeEL.appendChild(document.createTextNode(this.life));
+
+            this.isDamageInCooldown = true;
+
+            window.setTimeout(() => {
+                this.isDamageInCooldown = false;
+            }, 1500);
+        }
+
+        return;
+    }
 
     walkOnArena(controls) {
         if (controls.up && this.maxY + 0.006 < 1) {

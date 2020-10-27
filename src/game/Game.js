@@ -1,8 +1,5 @@
-import { resizeCanvas } from 'webgl-helper';
-
 import createProgram from '../shaders/js/program';
 import Player from '../models/Player';
-import Controls from './Controls';
 
 class Game {
     /** @type {WebGL2RenderingContext} */
@@ -14,6 +11,12 @@ class Game {
     gameType = 'pvp';
 
     controls;
+
+    lifeP1El;
+
+    lifeP2El;
+
+    randomDamageRange = 20;
 
     /** @type {WebGLProgram} */
     #program;
@@ -32,6 +35,12 @@ class Game {
             new Player(this.#gl, this.#program, 'player1', 'Lucy', player1Spawn, [0, 0, 0.5, 1]),
             new Player(this.#gl, this.#program, 'player2', 'Enemy', player2Spawn, [0.5, 0, 0, 1]),
         ];
+
+        this.lifeP1El = document.getElementById('hp-player1');
+        this.lifeP1El.appendChild(document.createTextNode(100));
+
+        this.lifeP2El = document.getElementById('hp-player2');
+        this.lifeP2El.appendChild(document.createTextNode(100));
     }
 
     setRobotSpawn() {
@@ -108,6 +117,32 @@ class Game {
         }
     }
 
+    isGameOver() {
+        if (this.#players.find(player => player.isAlive == false)) {
+            return true;
+        }
+        return false;
+    }
+
+    gameOver() {
+        this.#gl.clearColor(0, 0, 0, 0);
+        this.#gl.clear(this.#gl.COLOR_BUFFER_BIT | this.#gl.DEPTH_BUFFER_BIT);
+
+
+        let gameOverEl = document.getElementById('game-over');
+        let winnerEl = document.getElementById('winner');
+
+        const winner = this.#players.find(player => player.isAlive);
+
+        if (winner == undefined) {
+            gameOverEl.appendChild(document.createTextNode(`Game Over! Empate!`));    
+            return;
+        }
+
+        gameOverEl.appendChild(document.createTextNode(`Game Over!`));
+        winnerEl.appendChild(document.createTextNode(`${winner.type.toUpperCase()} venceu!`));
+    }
+
     update() {
         this.resize();
 
@@ -132,7 +167,7 @@ class Game {
             // Set a random color.
             this.#gl.uniform4fv(player.colorLocation, player.color);
 
-            this.#gl.uniform4fv(player.translationLocation, player.speed);     
+            this.#gl.uniform4fv(player.translationLocation, player.speed);
 
             // Draw the rectangle.
             const primitiveType = this.#gl.TRIANGLES;
@@ -140,6 +175,11 @@ class Game {
             const count = 6;
             this.#gl.drawArrays(primitiveType, offset, count);
         });
+
+        if (this.#players[0].hasCollided(this.#players[1])) {
+            this.#players[0].removeHP(this.randomDamageRange, this.lifeP1El);
+            this.#players[1].removeHP(this.randomDamageRange, this.lifeP2El);
+        };
     }
 }
 
