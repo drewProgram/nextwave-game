@@ -128,7 +128,6 @@ class Game {
         this.#gl.clearColor(0, 0, 0, 0);
         this.#gl.clear(this.#gl.COLOR_BUFFER_BIT | this.#gl.DEPTH_BUFFER_BIT);
 
-
         let gameOverEl = document.getElementById('game-over');
         let winnerEl = document.getElementById('winner');
 
@@ -139,6 +138,14 @@ class Game {
             return;
         }
 
+        if (winner.type == 'player1') {
+            gameOverEl.style.color = 'blue';
+            winnerEl.style.color = 'blue';
+        } else if (winner.type == 'player2') {
+            gameOverEl.style.color = 'red';
+            winnerEl.style.color = 'red';
+        }
+        
         gameOverEl.appendChild(document.createTextNode(`Game Over!`));
         winnerEl.appendChild(document.createTextNode(`${winner.type.toUpperCase()} venceu!`));
     }
