@@ -8,9 +8,8 @@ module.exports = {
     },
     devServer: {
         contentBase: path.resolve(__dirname, 'public'),
-        open: {
-            app: 'brave'
-        }
+        open: true,
+        port: 8080
     },
     module: {
         rules: [
