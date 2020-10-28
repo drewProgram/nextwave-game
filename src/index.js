@@ -8,17 +8,16 @@ const game = new Game();
 
 function loop() {
     if (game.isGameOver()){
+        cancelAnimationFrame(request);
         game.gameOver();
-        window.cancelAnimationFrame();
+        return;
     };
 
     game.update();
-    window.requestAnimationFrame(loop);
+    const request = requestAnimationFrame(loop);
 }
 
-function main() {
+(function main() {
     game.init();
     loop();
-}
-
-main();
+})();

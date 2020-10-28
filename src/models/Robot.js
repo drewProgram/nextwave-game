@@ -26,8 +26,6 @@ class Robot {
 
     isAlive = true;
 
-    isDamageInCooldown = false;
-
     name;
 
     /** @type {number[]} */
@@ -79,26 +77,16 @@ class Robot {
     }
 
     removeHP(number, lifeEL) {
-        if (!this.isDamageInCooldown) {
-            const damage = Math.floor(Math.random() * Math.floor(number));
+        const damage = Math.floor(Math.random() * Math.floor(number));
 
-            this.life -= damage;
+        this.life -= damage;
 
-            if (this.life <= 0) {
-                this.isAlive = false;
-            }
-
-            lifeEL.innerHTML = '';
-            lifeEL.appendChild(document.createTextNode(this.life));
-
-            this.isDamageInCooldown = true;
-
-            window.setTimeout(() => {
-                this.isDamageInCooldown = false;
-            }, 1500);
+        if (this.life <= 0) {
+            this.isAlive = false;
         }
 
-        return;
+        lifeEL.innerHTML = '';
+        lifeEL.appendChild(document.createTextNode(this.life));
     }
 
     walkOnArena(controls) {

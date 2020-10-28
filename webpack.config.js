@@ -24,9 +24,15 @@ module.exports = {
                 test: /\.css$/,
                 exclude: /node_modules/,
                 use: [
-                    { loader: 'style-loader'},
-                    { loader: 'css-loader'}
+                    { loader: 'style-loader' },
+                    { loader: 'css-loader' }
                 ]
+            },
+            {
+                test: /\.(ogg|mp3|wav|mpe?g)$/i,
+                use:{
+                    loader: 'file-loader'
+                }
             }
         ]
     }

@@ -1,12 +1,19 @@
 import createProgram from '../shaders/js/program';
 import Player from '../models/Player';
+import Sounds from './Sounds';
 
 class Game {
     /** @type {WebGL2RenderingContext} */
     #gl;
 
+    /** @type {WebGLProgram} */
+    #program;
+
     /** @type {Player[]} */
     #players;
+
+    /** @type {Sounds} */
+    sounds;
 
     gameType = 'pvp';
 
@@ -16,16 +23,19 @@ class Game {
 
     lifeP2El;
 
-    randomDamageRange = 20;
+    collisionsEl;
 
-    /** @type {WebGLProgram} */
-    #program;
+    isDamageInCooldown = false;
+
+    collisions = 0;
+
+    randomDamageRange = 20;
 
     constructor() {
         const canvas = document.getElementById("c");
         this.#gl = canvas.getContext("webgl2");
 
-        if (!this.#gl) alert("Seu navegador não suporta WebGL2.");
+        !this.#gl && alert("Seu navegador não suporta WebGL2.");
 
         this.#program = createProgram(this.#gl);
 
@@ -36,11 +46,16 @@ class Game {
             new Player(this.#gl, this.#program, 'player2', 'Enemy', player2Spawn, [0.5, 0, 0, 1]),
         ];
 
+        this.sounds = new Sounds();
+
         this.lifeP1El = document.getElementById('hp-player1');
         this.lifeP1El.appendChild(document.createTextNode(100));
 
         this.lifeP2El = document.getElementById('hp-player2');
         this.lifeP2El.appendChild(document.createTextNode(100));
+
+        this.collisionsEl = document.getElementById('collisions-number');
+        this.collisionsEl.appendChild(document.createTextNode(this.collisions));
     }
 
     setRobotSpawn() {
@@ -105,6 +120,9 @@ class Game {
                 player.move(e, player.type);
             });
         });
+        window.setTimeout(() => {
+            this.sounds.themeSound.play();
+        }, 1500)
     }
 
     resize() {
@@ -118,25 +136,28 @@ class Game {
     }
 
     isGameOver() {
-        if (this.#players.find(player => player.isAlive == false)) {
+        if (this.collisions == 5) {
             return true;
         }
         return false;
     }
 
     gameOver() {
+        this.sounds.themeSound.pause();
+        this.sounds.winSound.play();
+
         this.#gl.clearColor(0, 0, 0, 0);
         this.#gl.clear(this.#gl.COLOR_BUFFER_BIT | this.#gl.DEPTH_BUFFER_BIT);
 
         let gameOverEl = document.getElementById('game-over');
         let winnerEl = document.getElementById('winner');
 
-        const winner = this.#players.find(player => player.isAlive);
+        const HPs = [];
+        this.#players.forEach(player => HPs.push(player.life));
 
-        if (winner == undefined) {
-            gameOverEl.appendChild(document.createTextNode(`Game Over! Empate!`));    
-            return;
-        }
+        const higherHP = Math.max(...HPs);
+
+        const winner = this.#players.find(player => player.life === higherHP);
 
         if (winner.type == 'player1') {
             gameOverEl.style.color = 'blue';
@@ -183,9 +204,21 @@ class Game {
             this.#gl.drawArrays(primitiveType, offset, count);
         });
 
-        if (this.#players[0].hasCollided(this.#players[1])) {
+        if (this.#players[0].hasCollided(this.#players[1]) && this.isDamageInCooldown == false) {
+            this.sounds.collisionSound.play();
+
             this.#players[0].removeHP(this.randomDamageRange, this.lifeP1El);
             this.#players[1].removeHP(this.randomDamageRange, this.lifeP2El);
+            
+            this.collisions++;            
+            this.collisionsEl.innerHTML = '';
+            this.collisionsEl.appendChild(document.createTextNode(this.collisions));
+
+            this.isDamageInCooldown = true;
+
+            window.setTimeout(() => {
+                this.isDamageInCooldown = false;
+            }, 1500);
         };
     }
 }

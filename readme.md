@@ -11,3 +11,8 @@ OBS: Os únicos pacotes utilizados foram os do webpack e do babel, o helper foi 
 - Execute o comando `npm i` ou `yarn` para instalar todos os pacotes necessários para que o projeto rode;
 - Execute `npm dev` ou `yarn dev` para iniciar o projeto.
 
+## Consider installing
+yarn add twgl.js
+https://github.com/greggman/twgl.js
+https://github.com/oframe/ogl
+oimo.js -> colision

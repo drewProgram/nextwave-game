@@ -29,11 +29,10 @@ canvas {
 #hud {
     position: absolute;
     left: 10px;
-    top: 10px;
+    top: 40px;
 }
 
 .player-info {
-    padding: 20px;
     color: red;
 }
 
@@ -54,6 +53,13 @@ canvas {
     top: 45vh;
 }
 
-span {
+.hp-player {
     color: green;
+}
+
+#collisions {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    color: purple;
 }
