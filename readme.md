@@ -21,3 +21,9 @@ OBS: Os únicos pacotes utilizados foram os do webpack e do babel, o helper foi 
 A luta de robôs funciona de forma bem simples: aos ocorrer uma colisão, os dois robôs perdem um número aleatório de vida de 0 a 20. O jogo acaba quando acontecer 5 colisões e vence quem estiver com mais vida.
 
 Bom jogo!
+
+## Consider installing
+yarn add twgl.js
+https://github.com/greggman/twgl.js
+https://github.com/oframe/ogl
+oimo.js -> colision
