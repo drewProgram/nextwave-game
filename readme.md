@@ -9,7 +9,7 @@ OBS: Os únicos pacotes utilizados foram os do webpack e do babel, o helper foi 
 ## Como Iniciar
 
 - Execute o comando `npm i` ou `yarn` para instalar todos os pacotes necessários para que o projeto rode;
-- Execute `npm dev` ou `yarn dev` para iniciar o projeto.
+- Execute `npm run dev` ou `yarn dev` para iniciar o projeto.
 
 ## Como jogar
 
