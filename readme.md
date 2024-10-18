@@ -1,5 +1,23 @@
 # NEXTWAVE JS GAME
 
+# English
+A game created as a university project using JavaScript and WebGL.
+
+## How to install
+- Install Node.js
+-  Execute the command `npm i` or `yarn` to install all the packages necessary so you can run the project.
+-  Execute `npm run dev` or `yarn dev` to initiate the project.
+
+## How to play
+- Player 1 (Blue) can be controlled with the keys `w a s d`
+- Player 2 (Red) can be controlled with the arrow keys from the keyboard
+
+## Game rules
+The fight has simple rules: the players have to collide with each other and when the collision happens, the game will choose a random number to damage the players. Each player receive a different amount of damage when the collision happens, which can go from 0 to 20. The game ends when happens 5 collisions and the winner is the player that have more life in the end.
+
+Good Game!
+
+# Português
 Este é um jogo feito para o Challenge do segundo semestre de Sistemas de Informação feito com JavaScript e WebGL.
 
 Este projeto foi feito usando também Webpack e babel, para garantir que os navegadores entendam as funcionalidades mais modernas do JS.
